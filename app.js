@@ -80,3 +80,34 @@ window.login = async () => {
     loadJobs();
   }
 };
+
+let currentUser = null;
+
+async function checkUser() {
+  const { data } = await supabase.auth.getUser();
+  currentUser = data.user;
+}
+
+checkUser();
+
+window.applyJob = async (tuition_id) => {
+  if (!currentUser) {
+    alert("Please login first");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("applications")
+    .insert([
+      {
+        teacher_id: currentUser.id,
+        tuition_id: tuition_id
+      }
+    ]);
+
+  if (!error) {
+    alert("Application submitted! Now proceed to payment.");
+  } else {
+    alert("Already applied or error");
+  }
+};
