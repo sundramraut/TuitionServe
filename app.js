@@ -50,3 +50,6 @@ async function loadJobs() {
   });
 }
 loadJobs();
+window.applyJob = async (tuition_id) => {
+  alert("Next step: login + payment");
+};
