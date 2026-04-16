@@ -25,3 +25,27 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     alert("Error!");
   }
 });
+
+async function loadJobs() {
+  const { data, error } = await supabase
+    .from("tuition_posts")
+    .select("*")
+    .eq("status", "open");
+
+  const container = document.getElementById("jobs");
+  container.innerHTML = "";
+
+  data.forEach(job => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <h3>${job.subject} - Class ${job.class}</h3>
+      <p>${job.description}</p>
+      <p>Budget: ${job.budget}</p>
+      <button onclick="applyJob('${job.id}')">Apply</button>
+      <hr/>
+    `;
+
+    container.appendChild(div);
+  });
+}
