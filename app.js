@@ -49,3 +49,4 @@ async function loadJobs() {
     container.appendChild(div);
   });
 }
+loadJobs();
