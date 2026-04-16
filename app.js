@@ -111,3 +111,27 @@ window.applyJob = async (tuition_id) => {
     alert("Already applied or error");
   }
 };
+
+window.applyJob = async (tuition_id) => {
+  if (!currentUser) {
+    alert("Login first");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("applications")
+    .insert([
+      {
+        teacher_id: currentUser.id,
+        tuition_id: tuition_id,
+        payment_status: "pending"
+      }
+    ]);
+
+  if (!error) {
+    alert("Redirecting to payment...");
+    window.location.href = `payment.html?tuition_id=${tuition_id}`;
+  } else {
+    alert("Already applied or error");
+  }
+};
