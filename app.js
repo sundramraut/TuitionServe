@@ -49,7 +49,48 @@ async function loadJobs() {
     container.appendChild(div);
   });
 }
-loadJobs();
+
+async function loadJobs() {
+  const { data } = await supabase
+    .from("tuition_posts")
+    .select("*")
+    .eq("status", "open");
+
+  const container = document.getElementById("jobs");
+  container.innerHTML = "";
+
+  for (let job of data) {
+    let contactInfo = "";
+
+    if (currentUser) {
+      const { data: app } = await supabase
+        .from("applications")
+        .select("*")
+        .eq("teacher_id", currentUser.id)
+        .eq("tuition_id", job.id)
+        .single();
+
+      if (app && app.payment_status === "paid") {
+        contactInfo = `<p><b>Contact: 98XXXXXXXX</b></p>`;
+      }
+    }
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <h3>${job.subject} - Class ${job.class}</h3>
+      <p>${job.description}</p>
+      <p>Budget: ${job.budget}</p>
+      ${contactInfo}
+      <button onclick="applyJob('${job.id}')">Apply</button>
+      <hr/>
+    `;
+
+    container.appendChild(div);
+  }
+}
+
+
 window.applyJob = async (tuition_id) => {
   alert("Next step: login + payment");
 };
