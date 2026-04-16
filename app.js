@@ -53,3 +53,30 @@ loadJobs();
 window.applyJob = async (tuition_id) => {
   alert("Next step: login + payment");
 };
+
+window.signUp = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (!error) alert("Check your email!");
+};
+
+window.login = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (!error) {
+    alert("Logged in!");
+    loadJobs();
+  }
+};
