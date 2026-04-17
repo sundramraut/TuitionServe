@@ -1,27 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
 </head>
 
-<body class="bg-gray-100">
+<body>
 
-  <div class="p-6 text-center">
-    <h1 class="text-2xl font-bold">Teacher Dashboard</h1>
-    <p class="mt-2">Welcome! You are logged in.</p>
+<h2>Teacher Dashboard</h2>
 
-    <button onclick="logout()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">
-      Logout
-    </button>
-  </div>
+<p id="user">Loading user...</p>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<button onclick="show('home')">Home</button>
+<button onclick="show('vacancies')">Vacancies</button>
+<button onclick="show('profile')">Profile</button>
+
+<div id="home">
+  <h3>Welcome to Home Tuition Platform</h3>
+</div>
+
+<div id="vacancies" style="display:none;">
+  <h3>Vacancies</h3>
+  <div id="vacancyList">Loading...</div>
+</div>
+
+<div id="profile" style="display:none;">
+  <h3>Profile</h3>
+  <p>Update feature coming soon</p>
+</div>
+
+<script>
+let currentUser = null;
+
+// LOAD USER
+async function loadUser() {
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    window.location.href = "login.html";
+  } else {
+    currentUser = data.user;
+    document.getElementById("user").innerText = "Logged in: " + data.user.email;
+  }
+}
+
+// LOGOUT
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = "login.html";
+}
+
+// NAVIGATION
+function show(page) {
+  document.getElementById("home").style.display = "none";
+  document.getElementById("vacancies").style.display = "none";
+  document.getElementById("profile").style.display = "none";
+
+  document.getElementById(page).style.display = "block";
+}
+
+// LOAD VACANCIES FROM SUPABASE
+async function loadVacancies() {
+  const { data, error } = await supabase
+    .from("home_tuition_requests")
+    .select("*");
+
+  const list = document.getElementById("vacancyList");
+
+  if (error) {
+    list.innerHTML = "Error loading vacancies";
+  } else {
+    list.innerHTML = data.map(v =>
+      `<p><b>${v.name}</b> - Class ${v.class} - ${v.subject}</p>`
+    ).join("");
+  }
+}
+
+// INIT
+loadUser();
+loadVacancies();
+</script>
 
 </body>
 </html>
