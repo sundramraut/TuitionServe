@@ -1,0 +1,26 @@
+<h2>My Profile</h2>
+
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<input id="subject" placeholder="Subject">
+
+<button onclick="updateProfile()">Save</button>
+
+<script src="js/supabase.js"></script>
+
+<script>
+async function updateProfile() {
+  const user = await supabase.auth.getUser();
+
+  const { error } = await supabase
+    .from("teachers")
+    .update({
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      subject: document.getElementById("subject").value
+    })
+    .eq("id", user.data.user.id);
+
+  if (!error) alert("Profile updated!");
+}
+</script>
