@@ -1,8 +1,7 @@
-// HOME TUITION FORM
 const homeForm = document.getElementById("homeTuitionForm");
 
 if (homeForm) {
-  homeForm.addEventListener("submit", function(e) {
+  homeForm.addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const data = {
@@ -14,34 +13,44 @@ if (homeForm) {
       details: document.getElementById("details").value,
     };
 
-    console.log("Home Tuition Request:", data);
+    const { error } = await supabase
+      .from("home_tuition_requests")
+      .insert([data]);
 
-    alert("Request Submitted!");
-
-    homeForm.reset();
+    if (error) {
+      alert("Error submitting form");
+      console.log(error);
+    } else {
+      alert("Request Submitted Successfully!");
+      homeForm.reset();
+    }
   });
-}
+} 
 
-
-// SCHOOL FORM
 const schoolForm = document.getElementById("schoolForm");
 
 if (schoolForm) {
-  schoolForm.addEventListener("submit", function(e) {
+  schoolForm.addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const data = {
-      schoolName: document.getElementById("schoolName").value,
+      school_name: document.getElementById("schoolName").value,
       subject: document.getElementById("subject").value,
       location: document.getElementById("location").value,
       contact: document.getElementById("contact").value,
       details: document.getElementById("details").value,
     };
 
-    console.log("School Request:", data);
+    const { error } = await supabase
+      .from("school_requests")
+      .insert([data]);
 
-    alert("Request Submitted!");
-
-    schoolForm.reset();
+    if (error) {
+      alert("Error submitting form");
+      console.log(error);
+    } else {
+      alert("Request Submitted Successfully!");
+      schoolForm.reset();
+    }
   });
 }
