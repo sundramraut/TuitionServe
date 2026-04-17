@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<h2>Admin Dashboard</h2>
+
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<h3>Post Vacancy</h3>
+
+<input id="vacancyName" placeholder="Student/School Name">
+<input id="class" placeholder="Class">
+<input id="subject" placeholder="Subject">
+<button onclick="addVacancy()">Post</button>
+
+<hr>
+
+<h3>All Requests</h3>
+<div id="requests">Loading...</div>
+
+<script src="../js/supabase.js"></script>
+
+<script>
+
+// LOGOUT
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = "admin.html";
+}
+
+// ADD VACANCY
+async function addVacancy() {
+  const name = document.getElementById("vacancyName").value;
+  const classVal = document.getElementById("class").value;
+  const subject = document.getElementById("subject").value;
+
+  const { error } = await supabase
+    .from("vacancies")
+    .insert([{ name, class: classVal, subject }]);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Vacancy posted!");
+  }
+}
+
+// LOAD REQUESTS
+async function loadRequests() {
+  const { data, error } = await supabase
+    .from("home_tuition_requests")
+    .select("*");
+
+  const div = document.getElementById("requests");
+
+  if (error) {
+    div.innerHTML = "Error loading data";
+    return;
+  }
+
+  div.innerHTML = data.map(r => `
+    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+      <b>${r.name}</b><br>
+      Class: ${r.class}<br>
+      Subject: ${r.subject}<br>
+      Contact: ${r.contact}<br>
+      <button onclick="deleteRequest('${r.id}')">Delete</button>
+    </div>
+  `).join("");
+}
+
+// DELETE REQUEST
+async function deleteRequest(id) {
+  const { error } = await supabase
+    .from("home_tuition_requests")
+    .delete()
+    .eq("id", id);
+
+  if (!error) {
+    alert("Deleted");
+    loadRequests();
+  }
+}
+
+// INIT
+loadRequests();
+
+</script>
+
+</body>
+</html>
